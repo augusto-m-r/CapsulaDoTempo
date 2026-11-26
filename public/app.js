@@ -28,3 +28,47 @@ function calcularContagem(dataFutura) {
     const minutos = Math.floor((diferenca / (1000 * 60)) % 60)
     return `${dias}d ${horas}h ${minutos}min`;
 }
+
+function desenhar() {
+    lista.innerHTML = '';
+    for (const c of capsulas) {
+        const contagem = calcularContagem(c.abre_em);
+
+        const artigo = document.createElement('article');
+        artigo.className = contagem ? 'capsula trancada' : 'capsula aberta'
+
+        const titulo = document.createElement('h3');
+        titulo.textContent = (contagem ? '' : '') + c.titulo;
+
+        const autor = document.createElement('small');
+        autor.textContent = 'por' + c.autor;
+
+        const corpo = document.createElement('p')
+        if (contagem) {
+            corpo.className = 'contagem';
+            corpo.textContent = 'Abre em' + contagem;
+        } else {
+            corpo.textContent = c.mensagem;
+        }
+        artigo.append(titulo, autor, corpo);
+        lista.append(artigo)
+    }
+}
+
+form.addEventListener('submit', function(evento) {
+    evento.preventDefault();
+
+    const abreEm = new Date(form.abre_em.value);
+    if (abreEm <= new Date()) {
+        aviso.textContent = 'Escolha uma data no futuro';
+        return;
+    }
+
+    capsulas.unshift({
+        id: Date.now(),
+        autor: form.autor.value,
+        titulo: form.titulo.value,
+        mensagem: form.mensagem.value,
+        abre_em: abreEm.toISOString()
+    })
+})
